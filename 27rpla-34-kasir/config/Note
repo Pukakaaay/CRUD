@@ -1,0 +1,13 @@
+cara koneksi 
+PHP <---> mysql/mariadb
+3 driver koneksi mysql PHP:
+                    prosedural | OOP
+1.mysql driver          v           X  
+2.mysqli driver         v           V
+   |- mysqli_query();
+   |- mysqli_connect();
+3. PDO driver           X           V
+
+PDO("dbms:host=host;dbname=namadb",username,password)
+TAWES
+SELECT attribut FRON namatabel;

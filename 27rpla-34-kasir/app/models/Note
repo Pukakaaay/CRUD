@@ -1,0 +1,102 @@
+📌- Apa yang Terjadi Saat return $hasil; Dipanggil?
+    Metode ambilSemua() dipanggil dari luar kelas.
+    Query dieksekusi dan data dari database diambil.
+    Hasil disimpan dalam $hasil.
+    Metode mengembalikan $hasil ke pemanggilnya, lalu eksekusi dalam metode ini berhenti.
+
+1️⃣ $sql = "SELECT * FROM $this->tabel";
+📌 Fungsi:
+Menyiapkan perintah SQL untuk mengambil semua data dari tabel yang tersimpan dalam properti $this->tabel.
+
+📝 Penjelasan Detail:
+
+"SELECT * FROM $this->tabel" → Query SQL untuk mengambil semua kolom dan semua data dari tabel.
+$this->tabel → Berisi nama tabel yang ingin diambil datanya. Nama tabel sudah didefinisikan sebelumnya dalam properti kelas.
+✅ Contoh jika $this->tabel = "pelanggan"
+Query yang dihasilkan menjadi:
+
+sql
+Salin
+Edit
+SELECT * FROM pelanggan;
+
+2️⃣ $query = $this->connection->prepare($sql);
+📌 Fungsi:
+Menyiapkan (prepare) query SQL sebelum dieksekusi.
+
+📝 Penjelasan Detail:
+
+$this->connection → Objek koneksi PDO yang telah dibuat dalam kelas Database.
+prepare($sql) → Memastikan query disiapkan oleh PDO agar lebih aman dari SQL Injection dan lebih efisien saat dijalankan berkali-kali.
+🚀 Keuntungan prepare() dibanding query():
+
+Lebih aman: Dapat digunakan dengan bind parameter untuk mencegah SQL Injection.
+Lebih cepat: Jika query digunakan berulang kali dengan parameter yang berbeda, hanya perlu diparsing sekali.
+Fleksibel: Bisa digunakan untuk query yang memiliki parameter dinamis.
+✅ Contoh Alternatif dengan Parameter:
+
+php
+Salin
+Edit
+$sql = "SELECT * FROM pelanggan WHERE id = :id";
+$query = $this->connection->prepare($sql);
+
+
+3️⃣ $query->execute();
+📌 Fungsi:
+Menjalankan query SQL yang telah dipersiapkan sebelumnya.
+
+📝 Penjelasan Detail:
+
+Tanpa parameter (langsung dieksekusi):
+php
+Salin
+Edit
+$query->execute();
+Dengan parameter (lebih aman untuk input pengguna):
+php
+Salin
+Edit
+$query->execute(['id' => 5]); // Mengganti :id dengan nilai 5
+🚀 Keuntungan execute():
+
+Jika ada parameter bind, akan menggantinya dengan nilai sebenarnya sebelum dieksekusi.
+Mencegah SQL Injection karena PDO akan menangani data secara aman.
+
+
+4️⃣ $hasil = $query->fetchAll(PDO::FETCH_ASSOC);
+📌 Fungsi:
+Mengambil semua data hasil query dalam bentuk array asosiatif.
+
+📝 Penjelasan Detail:
+
+fetchAll(PDO::FETCH_ASSOC) → Mengambil semua hasil query dalam bentuk array asosiatif (key = nama kolom).
+Alternatif Lainnya:
+fetchAll(PDO::FETCH_NUM) → Mengembalikan array numerik.
+fetchAll(PDO::FETCH_OBJ) → Mengembalikan array sebagai objek.
+✅ Contoh Hasil fetchAll(PDO::FETCH_ASSOC) Misalkan tabel pelanggan memiliki data berikut:
+
+id	nama	alamat
+1	Budi	Jakarta
+2	Siti	Bandung
+Maka, hasil dari:
+
+php
+Salin
+Edit
+$hasil = $query->fetchAll(PDO::FETCH_ASSOC);
+print_r($hasil);
+Akan menjadi:
+
+php
+Salin
+Edit
+[
+    ["id" => 1, "nama" => "Budi", "alamat" => "Jakarta"],
+    ["id" => 2, "nama" => "Siti", "alamat" => "Bandung"]
+]
+🚀 Keuntungan fetchAll(PDO::FETCH_ASSOC):
+
+Mudah diakses menggunakan key nama kolom.
+Menghemat memori dibanding menggunakan fetchAll() tanpa parameter.
+
